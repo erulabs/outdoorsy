@@ -1,0 +1,22 @@
+apiVersion: skaffold/v2beta22
+kind: Config
+build:
+  artifacts:
+    - image: erulabs/outdoorsy
+      context: .
+      sync:
+        manual:
+          - src: "**/*"
+            dest: .
+      docker:
+        target: dev
+deploy:
+  kustomize:
+    paths:
+      - k8s/dev
+portForward:
+  - resourceType: Service
+    resourceName: www
+    port: 3002
+    localPort: 3002
+    address: 0.0.0.0
