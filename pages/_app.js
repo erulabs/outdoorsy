@@ -1,3 +1,4 @@
+import 'gridjs/dist/theme/mermaid.css'
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {

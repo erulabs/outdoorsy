@@ -11,6 +11,8 @@ process.on('SIGINT', () => process.exit(0))
 
 let handler
 
+require('./api')
+
 const server = https.createServer({
   key: fs.readFileSync(process.env.SSL_KEY_FILE),
   cert: fs.readFileSync(process.env.SSL_CRT_FILE),

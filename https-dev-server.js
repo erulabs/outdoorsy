@@ -8,6 +8,8 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+require('./api')
+
 app.prepare().then(() => {
   let server
   if (process.env.USE_INSECURE_SERVER) {

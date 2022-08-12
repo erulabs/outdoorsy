@@ -1,4 +1,22 @@
-.container {
-}
 .invite {
+}
+.siteContainer {
+  width: 100%;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.toast {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: lightseagreen;
+  color: black;
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px;
 }
