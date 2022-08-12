@@ -1,6 +1,6 @@
-const knex = require('../../lib/db')
+const db = require('../../lib/db')
 export default async function handler(req, res) {
-  const rows = await knex
+  const rows = await db
     .select('first_name', 'last_name', 'email', 'vehicle_type', 'vehicle_name', 'vehicle_length')
     .from('data')
 

@@ -1,7 +1,7 @@
-const knex = require('./lib/db')
+const db = require('./lib/db')
 
 const apiInit = async () => {
-  await knex.schema.createTable('data', table => {
+  await db.schema.createTable('data', table => {
     table.increments('id')
     table.string('first_name')
     table.string('last_name')

@@ -86,7 +86,7 @@ export default function Home() {
               </button>
               Drag and drop to upload files!
             </div>
-            <div style={{}}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <Grid
                 data={rows}
                 columns={[
