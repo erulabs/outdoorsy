@@ -4,7 +4,21 @@ A website, API, dev-tool show-off, and command-line tool!
 
 ![image](https://user-images.githubusercontent.com/759958/184419703-9f4540a5-e10c-4cf1-b572-0e0b634e3301.png)
 
-## Getting Started
+## CLI Examples
+
+`./cli.js list -s email`
+
+`./cli.js add test1.txt`
+
+`./cli.js add test2.txt`
+
+`./cli.js list --sort last_name`
+
+## Tests
+
+`yarn run tests`
+
+## Hackin'
 
 First, run the development server:
 
