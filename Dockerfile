@@ -16,7 +16,8 @@ COPY --chown=node:node --from=deps /app/node_modules ./node_modules
 COPY --chown=node:node scripts ./scripts
 COPY --chown=node:node public ./public
 COPY --chown=node:node styles ./styles
-COPY --chown=node:node components ./components
+# COPY --chown=node:node components ./components
+COPY --chown=node:node lib ./lib
 COPY --chown=node:node pages ./pages
 COPY --chown=node:node .env.loca[l] *.js *.json *.md ./
 COPY --chown=node:node package.json tls.cr[t] tls.ke[y] /app/secrets/
@@ -37,6 +38,7 @@ ENV NODE_ENV="production" \
   SSL_CRT_FILE="/app/secrets/tls.crt"
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/public ./public
 # Note that this pages dir is _only_ used by sitemap.xml (not served by Next)
 COPY --from=builder /app/pages ./pages

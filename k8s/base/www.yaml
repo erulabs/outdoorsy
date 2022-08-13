@@ -26,7 +26,6 @@ spec:
           image: erulabs/outdoorsy
           imagePullPolicy: IfNotPresent
           terminationMessagePolicy: FallbackToLogsOnError
-          command: ["yarn", "start"]
           ports:
             - name: https-ports
               containerPort: 3002

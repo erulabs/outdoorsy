@@ -12,4 +12,4 @@ const apiInit = async () => {
   })
 }
 
-apiInit()
+module.exports = { apiInit }

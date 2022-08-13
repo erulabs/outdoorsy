@@ -7,7 +7,8 @@
     "lint": "next lint",
     "tests": "./node_modules/.bin/mocha test",
     "http": "next dev",
-    "dev": "bash ./scripts/generate_self_signed_cert.sh && node --dns-result-order ipv4first ./https-dev-server.js",
+    "k8s": "bash ./scripts/k8s.sh",
+    "dev": "bash ./scripts/generate_self_signed_cert.sh && NODE_ENV=development node --dns-result-order ipv4first ./https-server.js",
     "start": "node --dns-result-order ipv4first ./https-server.js"
   },
   "prettier": {
@@ -56,7 +57,7 @@
     "mocha": "^10.0.0",
     "multer": "^1.4.5-lts.1",
     "multiparty": "^4.2.3",
-    "next": "^12.2.4",
+    "next": "^12.2.5",
     "next-connect": "^0.13.0",
     "next-optimized-images": "^2.6.2",
     "next-transpile-modules": "^9.0.0",

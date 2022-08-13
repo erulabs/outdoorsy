@@ -11,11 +11,18 @@ process.on('SIGINT', () => process.exit(0))
 
 let handler
 
+if (
+  !fs.existsSync(process.env.SSL_KEY_FILE || './k8s/dev/secrets/tls.key') ||
+  !fs.existsSync(process.env.SSL_CRT_FILE || './k8s/dev/secrets/tls.crt')
+) {
+  throw new Error('TLS KEY OR CERT MISSING')
+}
+
 require('./api')
 
 const server = https.createServer({
-  key: fs.readFileSync(process.env.SSL_KEY_FILE),
-  cert: fs.readFileSync(process.env.SSL_CRT_FILE),
+  key: fs.readFileSync(process.env.SSL_KEY_FILE || './k8s/dev/secrets/tls.key'),
+  cert: fs.readFileSync(process.env.SSL_CRT_FILE || './k8s/dev/secrets/tls.crt'),
 })
 const currentPort = parseInt(process.env.PORT, 10) || 3002
 
@@ -36,7 +43,7 @@ server.listen(currentPort, err => {
     process.exit(1)
   }
   const nextServer = new NextServer({
-    hostname: 'outdoor.sy',
+    hostname: 'outdoorsy.seandonmooy.com',
     port: currentPort,
     dir: path.join(__dirname),
     dev: false,

@@ -1,10 +1,10 @@
 ---
 bases:
   - ../base
+resources:
+  - ingress.yaml
 patchesStrategicMerge:
   - ./www.yaml
-# resources:
-#   - ./postgres.yaml
 secretGenerator:
   - name: service-cert
     type: "kubernetes.io/tls"
