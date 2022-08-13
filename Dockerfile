@@ -22,9 +22,8 @@ COPY --chown=node:node test ./test
 COPY --chown=node:node lib ./lib
 COPY --chown=node:node pages ./pages
 COPY --chown=node:node .env.loca[l] *.js *.json *.md *.lock ./
-COPY --chown=node:node k8s/dev/secrets/tls.cr[t] k8s/dev/secrets/tls.ke[y] /app/secrets/
-
 RUN echo "Building with asset prefix: ${BUILD_ASSET_PREFIX}" && BUILD_ASSET_PREFIX=$BUILD_ASSET_PREFIX yarn build
+COPY --chown=node:node k8s/dev/secrets/tls.cr[t] k8s/dev/secrets/tls.ke[y] /app/secrets/
 
 FROM builder AS dev
 ENV NEXT_TELEMETRY_DISABLED="1" \

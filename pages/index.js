@@ -102,6 +102,27 @@ export default function Home() {
               />
             </div>
           </div>
+          <div>
+            There is also a CLI included!
+            <pre>
+              <code>
+                ## CLI Examples
+                <br />
+                ./cli.js list -s email
+                <br />
+                ./cli.js add test1.txt
+                <br />
+                ./cli.js add test2.txt
+                <br />
+                ./cli.js list --sort last_name
+                <br />
+              </code>
+            </pre>
+          </div>
+          Peep more at{' '}
+          <a target="_blank" rel="noopener noreferrer" href="https://github.com/erulabs/outdoorsy">
+            https://github.com/erulabs/outdoorsy
+          </a>
         </div>
       </DroppableZone>
     </DndProvider>

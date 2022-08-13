@@ -17,6 +17,8 @@ deploy:
 profiles:
   - name: prod
     build:
+      local:
+        push: true
       artifacts:
         - image: erulabs/outdoorsy
           context: .
