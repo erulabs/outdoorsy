@@ -7,6 +7,7 @@ RUN yarn install --frozen-lockfile
 
 FROM node:16-bullseye-slim AS builder
 WORKDIR /app
+ARG BUILD_ASSET_PREFIX
 RUN apt-get update -yqq && \
   apt-get install -yqq awscli && \
   mkdir -p /app/secrets && \
@@ -16,11 +17,13 @@ COPY --chown=node:node --from=deps /app/node_modules ./node_modules
 COPY --chown=node:node scripts ./scripts
 COPY --chown=node:node public ./public
 COPY --chown=node:node styles ./styles
+COPY --chown=node:node test ./test
 # COPY --chown=node:node components ./components
 COPY --chown=node:node lib ./lib
 COPY --chown=node:node pages ./pages
-COPY --chown=node:node .env.loca[l] *.js *.json *.md ./
-COPY --chown=node:node package.json tls.cr[t] tls.ke[y] /app/secrets/
+COPY --chown=node:node .env.loca[l] *.js *.json *.md *.lock ./
+COPY --chown=node:node k8s/dev/secrets/tls.cr[t] k8s/dev/secrets/tls.ke[y] /app/secrets/
+
 RUN echo "Building with asset prefix: ${BUILD_ASSET_PREFIX}" && BUILD_ASSET_PREFIX=$BUILD_ASSET_PREFIX yarn build
 
 FROM builder AS dev
@@ -32,20 +35,24 @@ CMD ["yarn", "dev"]
 
 FROM node:16-bullseye-slim AS runner
 WORKDIR /app
+ARG BUILD_ASSET_PREFIX
 ENV NODE_ENV="production" \
   NEXT_TELEMETRY_DISABLED="1" \
   SSL_KEY_FILE="/app/secrets/tls.key" \
-  SSL_CRT_FILE="/app/secrets/tls.crt"
+  SSL_CRT_FILE="/app/secrets/tls.crt" \
+  HOST="0.0.0.0" \
+  HTTPS=true
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/test ./test
 # Note that this pages dir is _only_ used by sitemap.xml (not served by Next)
 COPY --from=builder /app/pages ./pages
-COPY --from=builder /app/.env.local ./
-COPY --from=builder --chown=node:node /app/https-server.js ./
+COPY --chown=node:node .env.loca[l] *.js *.json *.md *.lock ./
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+COPY --chown=node:node k8s/dev/secrets/tls.cr[t] k8s/dev/secrets/tls.ke[y] /app/secrets/
 EXPOSE 3002
 VOLUME ["/app/secrets"]
 CMD ["node", "https-server.js"]

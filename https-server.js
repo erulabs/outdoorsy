@@ -4,49 +4,45 @@ const https = require('https')
 const path = require('path')
 const fs = require('fs')
 const NextServer = require('next/dist/server/next-server').default
-
-// Make sure commands gracefully respect termination signals (e.g. from Docker)
-process.on('SIGTERM', () => process.exit(0))
-process.on('SIGINT', () => process.exit(0))
-
-let handler
+const { apiInit } = require('./api')
 
 if (
   !fs.existsSync(process.env.SSL_KEY_FILE || './k8s/dev/secrets/tls.key') ||
   !fs.existsSync(process.env.SSL_CRT_FILE || './k8s/dev/secrets/tls.crt')
 ) {
+  process.stderr.write('TLS KEY OR CERT MISSING\n')
   throw new Error('TLS KEY OR CERT MISSING')
 }
 
-require('./api')
-
-const server = https.createServer({
-  key: fs.readFileSync(process.env.SSL_KEY_FILE || './k8s/dev/secrets/tls.key'),
-  cert: fs.readFileSync(process.env.SSL_CRT_FILE || './k8s/dev/secrets/tls.crt'),
-})
-const currentPort = parseInt(process.env.PORT, 10) || 3002
-
-server.on('request', async (req, res) => {
-  try {
-    await handler(req, res)
-  } catch (err) {
-    console.error(err)
-    res.statusCode = 500
-    res.end('internal server error')
+let handler
+const server = https.createServer(
+  {
+    key: fs.readFileSync(process.env.SSL_KEY_FILE || './k8s/dev/secrets/tls.key'),
+    cert: fs.readFileSync(process.env.SSL_CRT_FILE || './k8s/dev/secrets/tls.crt'),
+  },
+  async (req, res) => {
+    try {
+      await handler(req, res)
+    } catch (err) {
+      console.error(err)
+      res.statusCode = 500
+      res.end('internal server error')
+    }
   }
-})
-server.on('error', err => console.error(err))
+)
+const currentPort = parseInt(process.env.PORT, 10) || 3002
 
 server.listen(currentPort, err => {
   if (err) {
     console.error('Failed to start server', err)
-    process.exit(1)
+    throw err
   }
   const nextServer = new NextServer({
-    hostname: 'outdoorsy.seandonmooy.com',
+    hostname: process.env.NEXT_HOSTNAME || 'localhost',
     port: currentPort,
     dir: path.join(__dirname),
     dev: false,
+    customServer: false,
     conf: {
       env: {},
       webpackDevMiddleware: null,
@@ -54,7 +50,7 @@ server.listen(currentPort, err => {
       typescript: { ignoreBuildErrors: false, tsconfigPath: 'tsconfig.json' },
       distDir: './.next',
       cleanDistDir: true,
-      assetPrefix: process.env.BUILD_ASSET_PREFIX || '',
+      assetPrefix: process.env.BUILD_ASSET_PREFIX || undefined,
       configOrigin: 'next.config.js',
       useFileSystemPublicRoutes: true,
       generateEtags: true,
@@ -82,9 +78,9 @@ server.listen(currentPort, err => {
           'cdn.outdoor.sy',
         ],
         disableStaticImages: false,
-        minimumCacheTTL: 120,
+        minimumCacheTTL: 60,
         formats: ['image/webp'],
-        dangerouslyAllowSVG: true,
+        dangerouslyAllowSVG: false,
         contentSecurityPolicy: "script-src 'none'; frame-src 'none'; sandbox;",
       },
       devIndicators: { buildActivity: true, buildActivityPosition: 'bottom-right' },
@@ -99,35 +95,42 @@ server.listen(currentPort, err => {
       excludeDefaultMomentLocales: true,
       serverRuntimeConfig: {},
       publicRuntimeConfig: {},
-      // reactStrictMode: true,
+      reactStrictMode: false,
       httpAgentOptions: { keepAlive: true },
       outputFileTracing: true,
       staticPageGenerationTimeout: 60,
-      swcMinify: true,
+      swcMinify: false,
+      output: 'standalone',
       experimental: {
+        optimisticClientCache: true,
+        manualClientBasePath: false,
+        legacyBrowsers: false,
+        browsersListForSwc: true,
+        newNextLinkBehavior: false,
         cpus: 4,
         sharedPool: true,
-        plugins: false,
         profiling: false,
         isrFlushToDisk: true,
-        workerThreads: true,
+        workerThreads: false,
         pageEnv: false,
         optimizeCss: false,
-        browsersListForSwc: true,
-        legacyBrowsers: false,
+        nextScriptWorkers: false,
         scrollRestoration: false,
         externalDir: false,
-        reactRoot: false,
         disableOptimizedLoading: false,
         gzipSize: true,
         swcFileReading: true,
         craCompat: false,
         esmExternals: true,
+        appDir: false,
         isrMemoryCacheSize: 52428800,
         serverComponents: false,
         fullySpecified: false,
         outputFileTracingRoot: '',
-        outputStandalone: true,
+        images: { allowFutureImage: true },
+        swcTraceProfiling: false,
+        forceSwcTransforms: false,
+        largePageDataBytes: 128000,
         trustHostHeader: false,
       },
       configFileName: 'next.config.js',
@@ -136,4 +139,5 @@ server.listen(currentPort, err => {
   handler = nextServer.getRequestHandler()
 
   console.log('HTTPS Listening on port', currentPort)
+  apiInit()
 })

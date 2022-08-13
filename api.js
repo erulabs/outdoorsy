@@ -10,6 +10,7 @@ const apiInit = async () => {
     table.string('vehicle_name')
     table.string('vehicle_length')
   })
+  console.log('apiInit complete')
 }
 
 module.exports = { apiInit }
