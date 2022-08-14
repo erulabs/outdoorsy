@@ -8,7 +8,7 @@
     "tests": "./node_modules/.bin/mocha test",
     "http": "next dev",
     "k8s": "bash ./scripts/k8s.sh",
-    "dev": "bash ./scripts/generate_self_signed_cert.sh && NODE_ENV=development node --dns-result-order ipv4first ./https-server.js",
+    "dev": "bash ./scripts/local-dev.sh",
     "start": "node --dns-result-order ipv4first ./https-server.js"
   },
   "prettier": {
