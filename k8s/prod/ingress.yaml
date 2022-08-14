@@ -16,6 +16,7 @@ spec:
   tls:
     - hosts:
         - outdoorsy.seandonmooy.com
+      secretName: outdoorsy
   rules:
     - host: outdoorsy.seandonmooy.com
       http:
